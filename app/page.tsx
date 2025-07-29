@@ -596,7 +596,7 @@ export default function KCBNetApp() {
 
               {/* Stats Grid with Holographic Cards */}
               <ScrollAnimatedSection>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 max-w-5xl mx-auto px-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto px-4">
                   {[
                     { value: "1000+", label: "Pelanggan Aktif", icon: Users, color: "blue" },
                     { value: "99.9%", label: "Network Uptime", icon: Signal, color: "green" },
@@ -604,20 +604,20 @@ export default function KCBNetApp() {
                     { value: "FREE", label: "Installation", icon: Award, color: "orange" },
                   ].map((stat, index) => (
                     <HolographicCard key={index} glowColor={stat.color} className="relative group">
-                      <div className="bg-slate-900/30 backdrop-blur-sm border border-slate-800/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center hover:bg-slate-800/30 hover:border-slate-700/30 transition-all duration-300 group-hover:scale-105 hover:shadow-xl hover:shadow-blue-500/10 relative overflow-hidden">
+                      <div className="bg-slate-900/30 backdrop-blur-sm border border-slate-800/30 rounded-xl p-3 sm:p-4 text-center hover:bg-slate-800/30 hover:border-slate-700/30 transition-all duration-300 group-hover:scale-105 hover:shadow-xl hover:shadow-blue-500/10 relative overflow-hidden">
                         {/* Audio visualizer effect */}
                         <AudioVisualizer
-                          bars={8}
-                          className="absolute top-2 left-2 opacity-0 group-hover:opacity-30 transition-opacity duration-300"
+                          bars={6}
+                          className="absolute top-1 left-1 opacity-0 group-hover:opacity-30 transition-opacity duration-300"
                         />
 
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-sky-400 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-blue-500/25 group-hover:scale-110 transition-all duration-300 animate-float-3d">
-                          <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-sky-400 rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3 shadow-lg shadow-blue-500/25 group-hover:scale-110 transition-all duration-300 animate-float-3d">
+                          <stat.icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                         </div>
-                        <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-1 sm:mb-2 group-hover:text-blue-400 transition-colors duration-300 font-mono">
+                        <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-1 group-hover:text-blue-400 transition-colors duration-300 font-mono">
                           <GlitchText>{stat.value}</GlitchText>
                         </div>
-                        <div className="text-xs sm:text-sm text-slate-400 font-medium group-hover:text-slate-300 transition-colors duration-300">
+                        <div className="text-xs sm:text-sm text-slate-400 font-medium group-hover:text-slate-300 transition-colors duration-300 leading-tight">
                           {stat.label}
                         </div>
                       </div>
@@ -761,7 +761,7 @@ export default function KCBNetApp() {
             </ScrollAnimatedSection>
 
             {/* Services grid with holographic effects */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {[
                 {
                   icon: Home,
@@ -809,31 +809,31 @@ export default function KCBNetApp() {
                 <ScrollAnimatedSection key={index}>
                   <HolographicCard glowColor={service.color}>
                     <Card className="group bg-slate-900/30 backdrop-blur-sm border border-slate-800/30 hover:bg-slate-800/30 hover:border-slate-700/30 transition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/10 relative overflow-hidden">
-                      <CardContent className="p-8 text-center">
+                      <CardContent className="p-4 sm:p-6 text-center">
                         {/* Audio visualizer background */}
                         <AudioVisualizer
-                          bars={10}
-                          className="absolute top-4 left-4 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                          bars={8}
+                          className="absolute top-2 left-2 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
                         />
 
-                        <div className="relative mb-6">
-                          <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-sky-400 rounded-2xl flex items-center justify-center mx-auto shadow-xl shadow-blue-500/25 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 animate-float-3d">
-                            <service.icon className="w-10 h-10 text-white" />
+                        <div className="relative mb-4">
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-500 to-sky-400 rounded-xl flex items-center justify-center mx-auto shadow-xl shadow-blue-500/25 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 animate-float-3d">
+                            <service.icon className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                           </div>
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors duration-300 font-mono">
+                        <h3 className="text-lg sm:text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors duration-300 font-mono">
                           <GlitchText>{service.title}</GlitchText>
                         </h3>
-                        <p className="text-slate-300 mb-6 leading-relaxed group-hover:text-white transition-colors duration-300">
+                        <p className="text-slate-300 mb-4 leading-relaxed group-hover:text-white transition-colors duration-300 text-sm">
                           {service.desc}
                         </p>
-                        <ul className="space-y-2">
+                        <ul className="space-y-1">
                           {service.features.map((feature, idx) => (
                             <li
                               key={idx}
-                              className="text-sm text-slate-400 flex items-center justify-center group-hover:text-slate-300 transition-colors duration-300"
+                              className="text-xs text-slate-400 flex items-center justify-center group-hover:text-slate-300 transition-colors duration-300"
                             >
-                              <CheckCircle className="w-4 h-4 text-blue-400 mr-2 flex-shrink-0 group-hover:text-blue-300 animate-pulse" />
+                              <CheckCircle className="w-3 h-3 text-blue-400 mr-2 flex-shrink-0 group-hover:text-blue-300 animate-pulse" />
                               {feature}
                             </li>
                           ))}
@@ -863,7 +863,7 @@ export default function KCBNetApp() {
             </ScrollAnimatedSection>
 
             {/* Process grid with holographic timeline */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
               {[
                 {
                   step: "01",
@@ -897,32 +897,32 @@ export default function KCBNetApp() {
                 <ScrollAnimatedSection key={index}>
                   <HolographicCard glowColor={process.color}>
                     <div className="text-center group relative">
-                      <div className="relative mb-8">
-                        <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-sky-400 rounded-2xl flex items-center justify-center mx-auto shadow-xl shadow-blue-500/25 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative animate-float-3d">
-                          <span className="text-2xl font-bold text-white font-mono">
+                      <div className="relative mb-4">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-500 to-sky-400 rounded-xl flex items-center justify-center mx-auto shadow-xl shadow-blue-500/25 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative animate-float-3d">
+                          <span className="text-lg sm:text-xl font-bold text-white font-mono">
                             <GlitchText>{process.step}</GlitchText>
                           </span>
-                          <div className="absolute -top-2 -right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
-                            <process.icon className="w-4 h-4 text-slate-800" />
+                          <div className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                            <process.icon className="w-3 h-3 text-slate-800" />
                           </div>
                         </div>
 
                         {/* Connection line for desktop */}
                         {index < 3 && (
-                          <div className="hidden lg:block absolute top-12 left-full w-8 h-0.5 bg-gradient-to-r from-blue-400 to-transparent"></div>
+                          <div className="hidden sm:block absolute top-8 sm:top-10 left-full w-4 sm:w-6 h-0.5 bg-gradient-to-r from-blue-400 to-transparent"></div>
                         )}
                       </div>
-                      <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors duration-300 font-mono">
+                      <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3 group-hover:text-blue-400 transition-colors duration-300 font-mono">
                         <GlitchText>{process.title}</GlitchText>
                       </h3>
-                      <p className="text-slate-300 leading-relaxed group-hover:text-white transition-colors duration-300">
+                      <p className="text-slate-300 leading-relaxed group-hover:text-white transition-colors duration-300 text-xs sm:text-sm">
                         {process.desc}
                       </p>
 
                       {/* Audio visualizer */}
                       <AudioVisualizer
-                        bars={6}
-                        className="mt-4 opacity-0 group-hover:opacity-30 transition-opacity duration-300"
+                        bars={4}
+                        className="mt-3 opacity-0 group-hover:opacity-30 transition-opacity duration-300"
                       />
                     </div>
                   </HolographicCard>
@@ -992,7 +992,7 @@ export default function KCBNetApp() {
             </ScrollAnimatedSection>
 
             {/* Packages grid with advanced holographic effects */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
               {filteredPackages.map((pkg, index) => (
                 <ScrollAnimatedSection key={pkg.id}>
                   <HolographicCard glowColor={pkg.popular ? "orange" : "blue"}>
@@ -1006,58 +1006,58 @@ export default function KCBNetApp() {
                       {/* Audio visualizer background */}
                       <AudioVisualizer
                         bars={15}
-                        className="absolute top-4 right-4 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
                       />
 
                       {pkg.popular && (
-                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-                          <Badge className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-6 py-2 text-sm font-bold shadow-lg animate-pulse-glow">
-                            <Award className="w-4 h-4 mr-2 animate-spin-slow" />
-                            <GlitchText>Most Popular</GlitchText>
+                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                          <Badge className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-3 py-1 text-xs font-bold shadow-lg animate-pulse-glow">
+                            <Award className="w-3 h-3 mr-1 animate-spin-slow" />
+                            <GlitchText>Popular</GlitchText>
                           </Badge>
                         </div>
                       )}
 
-                      <CardHeader className="text-center pb-6 pt-8">
-                        <div className="relative mb-6">
-                          <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-sky-400 rounded-2xl flex items-center justify-center mx-auto shadow-xl shadow-blue-500/25 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 animate-float-3d">
-                            <Wifi className="w-10 h-10 text-white" />
+                      <CardHeader className="text-center pb-4 pt-6 px-4">
+                        <div className="relative mb-4">
+                          <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-sky-400 rounded-xl flex items-center justify-center mx-auto shadow-xl shadow-blue-500/25 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 animate-float-3d">
+                            <Wifi className="w-7 h-7 text-white" />
                           </div>
                         </div>
-                        <CardTitle className="text-2xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors duration-300 font-mono">
+                        <CardTitle className="text-lg font-bold text-white mb-3 group-hover:text-blue-400 transition-colors duration-300 font-mono">
                           <GlitchText>{pkg.name}</GlitchText>
                         </CardTitle>
-                        <div className="space-y-3">
-                          <div className="text-5xl font-bold text-white group-hover:text-blue-400 transition-colors duration-300 font-mono">
-                            <GlitchText>{pkg.speed}</GlitchText> <span className="text-xl text-slate-400">Mbps</span>
+                        <div className="space-y-2">
+                          <div className="text-3xl font-bold text-white group-hover:text-blue-400 transition-colors duration-300 font-mono">
+                            <GlitchText>{pkg.speed}</GlitchText> <span className="text-sm text-slate-400">Mbps</span>
                           </div>
-                          <div className="text-4xl font-bold bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
+                          <div className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
                             Rp <GlitchText>{pkg.price}</GlitchText>K{" "}
-                            <span className="text-lg text-slate-400">/month</span>
+                            <span className="text-xs text-slate-400">/month</span>
                           </div>
-                          <div className="text-sm text-slate-400 font-medium">FUP: {pkg.fup}</div>
+                          <div className="text-xs text-slate-400 font-medium">FUP: {pkg.fup}</div>
                         </div>
                       </CardHeader>
 
-                      <CardContent className="space-y-6 px-6 pb-8">
-                        <div className="space-y-3">
+                      <CardContent className="space-y-4 px-4 pb-6">
+                        <div className="space-y-2">
                           {pkg.features.map((feature, index) => (
                             <div
                               key={index}
-                              className="flex items-center text-sm text-slate-300 group-hover:text-white transition-colors duration-300"
+                              className="flex items-center text-xs text-slate-300 group-hover:text-white transition-colors duration-300"
                             >
-                              <CheckCircle className="w-5 h-5 text-blue-400 mr-3 flex-shrink-0 group-hover:text-blue-300 animate-pulse" />
-                              {feature}
+                              <CheckCircle className="w-3 h-3 text-blue-400 mr-2 flex-shrink-0 group-hover:text-blue-300 animate-pulse" />
+                              <span className="leading-tight">{feature}</span>
                             </div>
                           ))}
                         </div>
 
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                           <HolographicCard>
                             <Button
-                              className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 shadow-lg font-semibold hover:scale-105 transition-all duration-300 relative overflow-hidden"
+                              className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 shadow-lg font-semibold hover:scale-105 transition-all duration-300 relative overflow-hidden text-sm py-2"
                               onClick={() => scrollToSection("contact")}
-                              size="lg"
+                              size="sm"
                             >
                               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer-fast"></div>
                               Choose Plan
@@ -1065,8 +1065,8 @@ export default function KCBNetApp() {
                           </HolographicCard>
                           <Button
                             variant="outline"
-                            className="w-full border-2 border-slate-700/50 text-slate-300 hover:bg-slate-800/50 bg-slate-900/20 backdrop-blur-sm hover:scale-105 transition-all duration-300"
-                            size="lg"
+                            className="w-full border border-slate-700/50 text-slate-300 hover:bg-slate-800/50 bg-slate-900/20 backdrop-blur-sm hover:scale-105 transition-all duration-300 text-xs py-2"
+                            size="sm"
                           >
                             View Details
                           </Button>
@@ -1114,46 +1114,46 @@ export default function KCBNetApp() {
             </ScrollAnimatedSection>
 
             {/* Testimonials grid with holographic cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {testimonials.map((testimonial, index) => (
                 <ScrollAnimatedSection key={testimonial.id}>
                   <HolographicCard glowColor={["blue", "green", "purple"][index]}>
                     <Card className="group bg-slate-900/30 backdrop-blur-sm border border-slate-800/30 hover:bg-slate-800/30 hover:border-slate-700/30 transition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/10 relative overflow-hidden">
-                      <CardContent className="p-8">
+                      <CardContent className="p-4 sm:p-6">
                         {/* Audio visualizer */}
                         <AudioVisualizer
-                          bars={8}
-                          className="absolute top-4 right-4 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                          bars={6}
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
                         />
 
-                        <div className="flex items-center space-x-6 mb-6">
+                        <div className="flex items-center space-x-4 mb-4">
                           <div className="relative">
                             <Image
                               src={testimonial.avatar || "/placeholder.svg"}
                               alt={testimonial.name}
-                              width={80}
-                              height={80}
-                              className="rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300"
+                              width={60}
+                              height={60}
+                              className="rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300"
                             />
                           </div>
                           <div>
-                            <h4 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors duration-300 font-mono">
+                            <h4 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors duration-300 font-mono">
                               <GlitchText>{testimonial.name}</GlitchText>
                             </h4>
-                            <p className="text-slate-400 font-medium group-hover:text-slate-300 transition-colors duration-300">
+                            <p className="text-slate-400 font-medium group-hover:text-slate-300 transition-colors duration-300 text-sm">
                               {testimonial.role}
                             </p>
-                            <div className="flex space-x-1 mt-2">
+                            <div className="flex space-x-1 mt-1">
                               {[...Array(testimonial.rating)].map((_, i) => (
                                 <Star
                                   key={i}
-                                  className="w-5 h-5 text-yellow-400 fill-current group-hover:scale-125 transition-transform duration-300 animate-pulse"
+                                  className="w-4 h-4 text-yellow-400 fill-current group-hover:scale-125 transition-transform duration-300 animate-pulse"
                                 />
                               ))}
                             </div>
                           </div>
                         </div>
-                        <p className="text-slate-300 italic text-lg leading-relaxed group-hover:text-white transition-colors duration-300">
+                        <p className="text-slate-300 italic leading-relaxed group-hover:text-white transition-colors duration-300 text-sm">
                           "{testimonial.comment}"
                         </p>
                       </CardContent>
