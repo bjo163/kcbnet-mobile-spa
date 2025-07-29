@@ -8,6 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
   Wifi,
   Phone,
   Mail,
@@ -32,6 +38,8 @@ import {
   Globe,
   Cpu,
   Signal,
+  LogIn,
+  ChevronDown,
 } from "lucide-react"
 import Image from "next/image"
 import LoadingScreen from "@/components/loading-screen"
@@ -398,6 +406,37 @@ export default function KCBNetApp() {
                     <div className="absolute inset-0 bg-blue-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
                   </button>
                 ))}
+
+                {/* Login Dropdown Menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300 hover:scale-105 group relative"
+                    >
+                      <LogIn className="w-4 h-4 mr-2 group-hover:animate-bounce" />
+                      Masuk
+                      <ChevronDown className="w-4 h-4 ml-2 transition-transform group-data-[state=open]:rotate-180" />
+                      <div className="absolute inset-0 bg-blue-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 shadow-xl">
+                    <DropdownMenuItem 
+                      className="cursor-pointer hover:bg-blue-500/10 text-slate-300 hover:text-white transition-colors duration-300"
+                      onClick={() => window.open('https://portal.kcbnet.id', '_blank')}
+                    >
+                      <Building className="w-4 h-4 mr-2" />
+                      <span>Portal</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      className="cursor-pointer hover:bg-blue-500/10 text-slate-300 hover:text-white transition-colors duration-300"
+                      onClick={() => window.open('https://pelanggan.kcbnet.id', '_blank')}
+                    >
+                      <Users className="w-4 h-4 mr-2" />
+                      <span>Pelanggan</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
 
               <HolographicCard>
@@ -443,6 +482,28 @@ export default function KCBNetApp() {
                       </span>
                     </button>
                   ))}
+                  
+                  {/* Mobile Login Menu */}
+                  <div className="py-2 px-4">
+                    <div className="text-base font-medium text-gray-300 mb-2">Masuk</div>
+                    <div className="flex flex-col space-y-2 ml-4">
+                      <button
+                        onClick={() => window.open('https://portal.kcbnet.id', '_blank')}
+                        className="text-left text-sm text-slate-400 hover:text-blue-400 transition-colors py-1 hover:bg-blue-500/5 rounded group flex items-center"
+                      >
+                        <Building className="w-4 h-4 mr-2" />
+                        Portal
+                      </button>
+                      <button
+                        onClick={() => window.open('https://pelanggan.kcbnet.id', '_blank')}
+                        className="text-left text-sm text-slate-400 hover:text-blue-400 transition-colors py-1 hover:bg-blue-500/5 rounded group flex items-center"
+                      >
+                        <Users className="w-4 h-4 mr-2" />
+                        Pelanggan
+                      </button>
+                    </div>
+                  </div>
+
                   <HolographicCard>
                     <Button
                       size="lg"
