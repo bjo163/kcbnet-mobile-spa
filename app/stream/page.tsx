@@ -176,54 +176,63 @@ export default function StreamPage() {
         const supportsAAC = mediaSource && MediaSource.isTypeSupported('audio/mp4; codecs="mp4a.40.2"')
         
         console.log('Codec support check:', { supportsH264, supportsAAC })
+        console.log('Stream URL:', channel.url)
         
-        // Use HLS.js for browsers with optimized settings for smooth live streaming
+        // Check if this is a TS stream or HLS stream
+        const isTS = channel.url.includes('.ts') || !channel.url.includes('.m3u8')
+        console.log('Stream type detected:', isTS ? 'TS (Transport Stream)' : 'HLS')
+        
+        // Use HLS.js for browsers with settings optimized for TS streams
         const hls = new Hls({
           debug: false,
           enableWorker: false,
           lowLatencyMode: false,
-          // Buffer settings optimized for live streaming
-          backBufferLength: 5, // Keep only 5 seconds of back buffer
-          maxBufferLength: 8,  // Small forward buffer to reduce latency
-          maxMaxBufferLength: 15, // Maximum buffer length
-          maxBufferSize: 5 * 1000 * 1000, // 5MB buffer
-          maxBufferHole: 0.2,
-          // Loading and recovery settings
-          maxLoadingDelay: 3,
-          maxFragLookUpTolerance: 0.1,
-          nudgeOffset: 0.05,
-          nudgeMaxRetry: 3,
-          // Live streaming optimizations
-          liveSyncDurationCount: 1, // Stay very close to live edge
-          liveMaxLatencyDurationCount: 3,
+          // Buffer settings optimized for TS streaming
+          backBufferLength: 10, // Keep more buffer for TS streams
+          maxBufferLength: 20,  // Larger buffer for TS
+          maxMaxBufferLength: 30, // Maximum buffer length
+          maxBufferSize: 10 * 1000 * 1000, // 10MB buffer for TS
+          maxBufferHole: 0.5,
+          // Loading and recovery settings for TS
+          maxLoadingDelay: 5,
+          maxFragLookUpTolerance: 0.2,
+          nudgeOffset: 0.1,
+          nudgeMaxRetry: 5,
+          // TS streaming optimizations
+          liveSyncDurationCount: 2, // Less aggressive for TS
+          liveMaxLatencyDurationCount: 5,
           liveDurationInfinity: true,
-          liveBackBufferLength: 0, // Don't keep old segments for live
-          maxLiveSyncPlaybackRate: 1.02, // Speed up slightly if behind
-          maxStarvationDelay: 1,
+          liveBackBufferLength: 10, // Keep more buffer for TS
+          maxLiveSyncPlaybackRate: 1.01, // Less aggressive catch-up
+          maxStarvationDelay: 2,
           // Auto start and position
           autoStartLoad: true,
           startPosition: -1, // Start at live edge
-          // Performance settings
-          capLevelOnFPSDrop: true,
-          capLevelToPlayerSize: false, // Don't limit by player size
+          // Performance settings for TS
+          capLevelOnFPSDrop: false, // Don't drop levels for TS
+          capLevelToPlayerSize: false,
           ignoreDevicePixelRatio: true,
-          initialLiveManifestSize: 1,
-          // Fragment retry settings - more tolerant of errors
-          fragLoadingMaxRetry: 5, // Increased from 2 to 5
-          fragLoadingMaxRetryTimeout: 2000, // Increased timeout
-          manifestLoadingMaxRetry: 5, // Increased manifest retries
-          manifestLoadingMaxRetryTimeout: 2000,
-          // Force lower levels first to avoid codec issues
-          startLevel: 0,
-          testBandwidth: false,
-          // Additional error tolerance settings
-          fragLoadingTimeOut: 10000, // 10 second timeout for fragments
-          manifestLoadingTimeOut: 5000, // 5 second timeout for manifest
-          levelLoadingTimeOut: 5000, // 5 second timeout for level loading
-          // Retry delay configuration
-          fragLoadingRetryDelay: 500, // Wait 500ms between retries
-          levelLoadingRetryDelay: 1000, // Wait 1s between level retries
-          manifestLoadingRetryDelay: 1000 // Wait 1s between manifest retries
+          initialLiveManifestSize: 2,
+          // Fragment retry settings - very tolerant for TS
+          fragLoadingMaxRetry: 10, // Very high retry for TS
+          fragLoadingMaxRetryTimeout: 5000, // Longer timeout for TS
+          manifestLoadingMaxRetry: 10,
+          manifestLoadingMaxRetryTimeout: 5000,
+          // TS stream settings
+          startLevel: -1, // Auto-select best level for TS
+          testBandwidth: true, // Enable bandwidth testing for TS
+          // Additional error tolerance settings for TS
+          fragLoadingTimeOut: 20000, // 20 second timeout for TS
+          manifestLoadingTimeOut: 10000, // 10 second timeout for manifest
+          levelLoadingTimeOut: 10000, // 10 second timeout for level loading
+          // Retry delay configuration for TS
+          fragLoadingRetryDelay: 1000, // Wait 1s between retries for TS
+          levelLoadingRetryDelay: 2000, // Wait 2s between level retries
+          manifestLoadingRetryDelay: 2000, // Wait 2s between manifest retries
+          // TS specific configurations
+          enableSoftwareAES: true, // Enable software AES for encrypted TS
+          abrEwmaFastLive: 3.0, // Faster adaptation for live TS
+          abrEwmaSlowLive: 9.0, // Slower adaptation for stability
         })
         
         hlsRef.current = hls
@@ -238,10 +247,10 @@ export default function StreamPage() {
           const levels = hls.levels
           console.log('Available quality levels:', levels.map(l => `${l.width}x${l.height}@${l.bitrate}`))
           
-          // Start with lowest quality for better compatibility
+          // For TS streams, start with auto level selection
           if (levels.length > 0) {
-            hls.currentLevel = 0 // Start with lowest quality
-            console.log('Starting with lowest quality level for compatibility')
+            hls.currentLevel = -1 // Auto-select best level for TS
+            console.log('Using auto level selection for TS stream')
           }
           
           videoRef.current?.play().catch(e => {
@@ -454,7 +463,7 @@ export default function StreamPage() {
             clearInterval(bufferCheckInterval)
           }
           
-          // Monitor for stalls every 2 seconds
+          // Monitor for stalls every 3 seconds (longer for TS)
           bufferCheckInterval = setInterval(() => {
             if (videoRef.current && hlsRef.current) {
               const video = videoRef.current
@@ -468,20 +477,20 @@ export default function StreamPage() {
                 })
               }
               
-              // Check buffer health
+              // Check buffer health - more lenient for TS streams
               if (buffered.length > 0) {
                 const bufferEnd = buffered.end(buffered.length - 1)
                 const currentTime = video.currentTime
                 const bufferSize = bufferEnd - currentTime
                 
-                // If buffer is very small or we're falling behind, seek to live edge
-                if (bufferSize < 2 || bufferSize > 15) {
-                  console.log(`Buffer size: ${bufferSize}s, seeking to live edge`)
-                  video.currentTime = bufferEnd - 1
+                // For TS streams, allow larger buffer differences
+                if (bufferSize < 1 || bufferSize > 30) {
+                  console.log(`TS Buffer size: ${bufferSize}s, seeking to optimal position`)
+                  video.currentTime = Math.max(0, bufferEnd - 5) // Stay further from edge for TS
                 }
               }
             }
-          }, 2000)
+          }, 3000) // Check every 3 seconds for TS streams
 
           // Clear stall recovery timeout since we got new data
           if (stallRecoveryTimeout) {
@@ -512,25 +521,57 @@ export default function StreamPage() {
         hls.on(Hls.Events.BUFFER_APPENDED, setupStallRecovery)
         hls.on(Hls.Events.FRAG_LOADED, setupStallRecovery)
 
-      } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
-        // Native HLS support (Safari)
-        console.log('Using native HLS support')
+      } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl') || videoRef.current.canPlayType('video/mp2t')) {
+        // Native HLS support (Safari) or TS support
+        console.log('Using native video support for TS/HLS stream')
+        setStreamQuality('good')
         videoRef.current.src = channel.url
         videoRef.current.load()
         videoRef.current.play().catch(e => {
           console.error('Failed to play video natively:', e)
           setError('Failed to play video. Please try again.')
+          setStreamQuality('poor')
         })
       } else {
-        // Last resort: try direct URL playback
-        console.log('HLS not supported, trying direct URL playback')
-        setError('HLS not supported. Trying direct playback...')
-        videoRef.current.src = channel.url
-        videoRef.current.load()
-        videoRef.current.play().catch(e => {
-          console.error('Direct playback failed:', e)
-          setError('This video format is not supported by your browser')
-        })
+        // Last resort: try direct URL playback for TS
+        console.log('No native support, trying direct TS playback')
+        setError('Loading stream...')
+        setStreamQuality('reconnecting')
+        
+        // For TS streams, try setting appropriate MIME type
+        if (channel.url.includes('.ts')) {
+          // Create a blob URL with proper MIME type for TS
+          fetch(channel.url)
+            .then(response => response.blob())
+            .then(blob => {
+              const tsBlob = new Blob([blob], { type: 'video/mp2t' })
+              const blobUrl = URL.createObjectURL(tsBlob)
+              
+              videoRef.current!.src = blobUrl
+              videoRef.current!.load()
+              return videoRef.current!.play()
+            })
+            .catch(e => {
+              console.error('TS blob playback failed, trying direct URL:', e)
+              // Fallback to direct URL
+              videoRef.current!.src = channel.url
+              videoRef.current!.load()
+              videoRef.current!.play().catch(e2 => {
+                console.error('Direct TS playback also failed:', e2)
+                setError('This video format is not supported by your browser')
+                setStreamQuality('poor')
+              })
+            })
+        } else {
+          // Non-TS stream, try direct playback
+          videoRef.current.src = channel.url
+          videoRef.current.load()
+          videoRef.current.play().catch(e => {
+            console.error('Direct playback failed:', e)
+            setError('This video format is not supported by your browser')
+            setStreamQuality('poor')
+          })
+        }
       }
     }
   }
@@ -639,15 +680,16 @@ export default function StreamPage() {
 
     const handleTimeUpdate = () => {
       // Auto-recovery: if video is significantly behind live edge, seek forward
+      // More lenient for TS streams
       if (hlsRef.current && video.buffered.length > 0) {
         const bufferEnd = video.buffered.end(video.buffered.length - 1)
         const currentTime = video.currentTime
         const lag = bufferEnd - currentTime
         
-        // If we're more than 30 seconds behind, jump to near live edge
-        if (lag > 30) {
-          console.log(`Video is ${lag}s behind, jumping to live edge`)
-          video.currentTime = bufferEnd - 5
+        // If we're more than 60 seconds behind for TS streams, jump to near live edge
+        if (lag > 60) {
+          console.log(`TS Video is ${lag}s behind, jumping closer to live edge`)
+          video.currentTime = bufferEnd - 10 // Stay further from edge for TS
         }
       }
     }
@@ -788,6 +830,7 @@ export default function StreamPage() {
                         crossOrigin="anonymous"
                       >
                         <source src={currentChannel.url} type="application/x-mpegURL" />
+                        <source src={currentChannel.url} type="video/mp2t" />
                         Your browser does not support the video tag.
                       </video>
                       
