@@ -407,6 +407,15 @@ export default function KCBNetApp() {
                   </button>
                 ))}
 
+                {/* Stream Menu */}
+                <a
+                  href="/stream" 
+                  className="relative text-sm font-semibold transition-all duration-300 hover:scale-105 group text-gray-300 hover:text-white"
+                >
+                  Stream
+                  <div className="absolute inset-0 bg-blue-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                </a>
+
                 {/* Login Dropdown Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -482,6 +491,17 @@ export default function KCBNetApp() {
                       </span>
                     </button>
                   ))}
+                  
+                  {/* Stream Menu Mobile */}
+                  <a
+                    href="/stream"
+                    className="text-left text-base font-medium text-gray-300 hover:text-blue-400 transition-colors py-2 px-4 hover:bg-blue-500/10 rounded-lg group block"
+                  >
+                    <span className="relative">
+                      Stream
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                    </span>
+                  </a>
                   
                   {/* Mobile Login Menu */}
                   <div className="py-2 px-4">
