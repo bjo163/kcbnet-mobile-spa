@@ -4,9 +4,13 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'KCBNet - Internet Fiber Optic Provider',
+  description: 'Penyedia layanan internet fiber optic terpercaya untuk rumah dan bisnis. Unlimited, stabil, dan support 24/7.',
+  generator: 'KCBNet.id',
+  keywords: ['internet fiber', 'provider internet', 'fiber optic', 'internet karawang', 'kcbnet', 'internet unlimited'],
+  authors: [{ name: 'KCBNet Team' }],
+  creator: 'KCBNet.id',
+  publisher: 'CV. Kemilau Cahaya Barokah',
 }
 
 export default function RootLayout({
