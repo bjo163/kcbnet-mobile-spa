@@ -169,6 +169,17 @@ export default function StreamPage() {
         hlsRef.current = null
       }
 
+      // Check if this is a TS stream or HLS stream
+      const isTS = channel.url.includes('.ts') || 
+                   !channel.url.includes('.m3u8') || 
+                   /\/\d+$/.test(channel.url) // URLs ending with numbers (like /144, /145, etc.)
+      console.log('Stream type detected:', isTS ? 'TS (Transport Stream)' : 'HLS')
+      console.log('Stream URL pattern:', channel.url)
+
+      // Use proxy for all stream URLs to avoid CORS
+      const proxyUrl = `/api/stream?url=${encodeURIComponent(channel.url)}`
+      console.log('Using proxy URL:', proxyUrl)
+
       if (Hls.isSupported()) {
         // Check if MediaSource and required codecs are supported
         const mediaSource = window.MediaSource || (window as any).WebKitMediaSource
@@ -178,33 +189,29 @@ export default function StreamPage() {
         console.log('Codec support check:', { supportsH264, supportsAAC })
         console.log('Stream URL:', channel.url)
         
-        // Check if this is a TS stream or HLS stream
-        const isTS = channel.url.includes('.ts') || !channel.url.includes('.m3u8')
-        console.log('Stream type detected:', isTS ? 'TS (Transport Stream)' : 'HLS')
-        
         // Use HLS.js for browsers with settings optimized for TS streams
         const hls = new Hls({
           debug: false,
           enableWorker: false,
           lowLatencyMode: false,
           // Buffer settings optimized for TS streaming
-          backBufferLength: 10, // Keep more buffer for TS streams
-          maxBufferLength: 20,  // Larger buffer for TS
-          maxMaxBufferLength: 30, // Maximum buffer length
-          maxBufferSize: 10 * 1000 * 1000, // 10MB buffer for TS
-          maxBufferHole: 0.5,
+          backBufferLength: isTS ? 15 : 10, // More buffer for TS streams
+          maxBufferLength: isTS ? 30 : 20,  // Larger buffer for TS
+          maxMaxBufferLength: isTS ? 40 : 30, // Maximum buffer length
+          maxBufferSize: isTS ? 15 * 1000 * 1000 : 10 * 1000 * 1000, // 15MB buffer for TS
+          maxBufferHole: isTS ? 1.0 : 0.5,
           // Loading and recovery settings for TS
-          maxLoadingDelay: 5,
-          maxFragLookUpTolerance: 0.2,
-          nudgeOffset: 0.1,
-          nudgeMaxRetry: 5,
+          maxLoadingDelay: isTS ? 8 : 5,
+          maxFragLookUpTolerance: isTS ? 0.5 : 0.2,
+          nudgeOffset: isTS ? 0.2 : 0.1,
+          nudgeMaxRetry: isTS ? 8 : 5,
           // TS streaming optimizations
-          liveSyncDurationCount: 2, // Less aggressive for TS
-          liveMaxLatencyDurationCount: 5,
+          liveSyncDurationCount: isTS ? 1 : 2, // More aggressive for raw TS
+          liveMaxLatencyDurationCount: isTS ? 3 : 5,
           liveDurationInfinity: true,
-          liveBackBufferLength: 10, // Keep more buffer for TS
-          maxLiveSyncPlaybackRate: 1.01, // Less aggressive catch-up
-          maxStarvationDelay: 2,
+          liveBackBufferLength: isTS ? 15 : 10, // Keep more buffer for TS
+          maxLiveSyncPlaybackRate: isTS ? 1.02 : 1.01, // Slightly more aggressive catch-up for TS
+          maxStarvationDelay: isTS ? 3 : 2,
           // Auto start and position
           autoStartLoad: true,
           startPosition: -1, // Start at live edge
@@ -212,31 +219,31 @@ export default function StreamPage() {
           capLevelOnFPSDrop: false, // Don't drop levels for TS
           capLevelToPlayerSize: false,
           ignoreDevicePixelRatio: true,
-          initialLiveManifestSize: 2,
+          initialLiveManifestSize: isTS ? 1 : 2,
           // Fragment retry settings - very tolerant for TS
-          fragLoadingMaxRetry: 10, // Very high retry for TS
-          fragLoadingMaxRetryTimeout: 5000, // Longer timeout for TS
-          manifestLoadingMaxRetry: 10,
-          manifestLoadingMaxRetryTimeout: 5000,
+          fragLoadingMaxRetry: isTS ? 15 : 10, // Even higher retry for raw TS
+          fragLoadingMaxRetryTimeout: isTS ? 8000 : 5000, // Longer timeout for TS
+          manifestLoadingMaxRetry: isTS ? 15 : 10,
+          manifestLoadingMaxRetryTimeout: isTS ? 8000 : 5000,
           // TS stream settings
           startLevel: -1, // Auto-select best level for TS
-          testBandwidth: true, // Enable bandwidth testing for TS
+          testBandwidth: !isTS, // Disable bandwidth testing for raw TS streams
           // Additional error tolerance settings for TS
-          fragLoadingTimeOut: 20000, // 20 second timeout for TS
-          manifestLoadingTimeOut: 10000, // 10 second timeout for manifest
-          levelLoadingTimeOut: 10000, // 10 second timeout for level loading
+          fragLoadingTimeOut: isTS ? 30000 : 20000, // 30 second timeout for raw TS
+          manifestLoadingTimeOut: isTS ? 15000 : 10000, // 15 second timeout for manifest
+          levelLoadingTimeOut: isTS ? 15000 : 10000, // 15 second timeout for level loading
           // Retry delay configuration for TS
-          fragLoadingRetryDelay: 1000, // Wait 1s between retries for TS
-          levelLoadingRetryDelay: 2000, // Wait 2s between level retries
-          manifestLoadingRetryDelay: 2000, // Wait 2s between manifest retries
+          fragLoadingRetryDelay: isTS ? 1500 : 1000, // Wait longer between retries for TS
+          levelLoadingRetryDelay: isTS ? 3000 : 2000, // Wait longer between level retries
+          manifestLoadingRetryDelay: isTS ? 3000 : 2000, // Wait longer between manifest retries
           // TS specific configurations
           enableSoftwareAES: true, // Enable software AES for encrypted TS
-          abrEwmaFastLive: 3.0, // Faster adaptation for live TS
-          abrEwmaSlowLive: 9.0, // Slower adaptation for stability
+          abrEwmaFastLive: isTS ? 5.0 : 3.0, // Much faster adaptation for raw TS
+          abrEwmaSlowLive: isTS ? 15.0 : 9.0, // Much slower adaptation for stability
         })
         
         hlsRef.current = hls
-        hls.loadSource(channel.url)
+        hls.loadSource(proxyUrl) // Use proxy URL instead of direct URL
         hls.attachMedia(videoRef.current)
         
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
@@ -261,13 +268,34 @@ export default function StreamPage() {
         })
         
         hls.on(Hls.Events.ERROR, (event, data) => {
-          console.error('HLS error:', event, data)
+          console.error('HLS error detected:', {
+            type: data.type,
+            details: data.details,
+            fatal: data.fatal,
+            reason: data.reason,
+            response: data.response,
+            frag: data.frag ? { url: data.frag.url, level: data.frag.level } : null,
+            networkDetails: data.networkDetails,
+            event: event
+          })
           
           if (data.fatal) {
+            console.log(`Fatal HLS error: ${data.type} - ${data.details}`)
+            
             switch (data.type) {
               case Hls.ErrorTypes.NETWORK_ERROR:
                 console.log('Fatal network error - attempting automatic recovery')
-                setError('Connection issue. Reconnecting...')
+                
+                // Check specific network error types
+                if (data.details === 'manifestLoadError') {
+                  setError('Cannot load stream playlist. The channel may be offline.')
+                } else if (data.details === 'fragLoadError') {
+                  setError('Stream fragments unavailable. Reconnecting...')
+                } else if (data.details === 'manifestLoadTimeOut') {
+                  setError('Connection timeout. Check your internet connection.')
+                } else {
+                  setError('Connection issue. Reconnecting...')
+                }
                 
                 // For fatal network errors, try a more aggressive recovery
                 if (retryCount < 3) {
@@ -294,14 +322,16 @@ export default function StreamPage() {
                 }
                 break
               case Hls.ErrorTypes.MEDIA_ERROR:
-                console.log('Fatal media error - codec or format issue')
+                console.log(`Fatal media error: ${data.details}`)
+                
+                // Handle specific media error types
                 if (data.details === 'bufferAddCodecError' || data.details === 'bufferAppendError') {
                   console.log('Codec not supported, falling back to native playback')
-                  setError('Video format not supported. Trying alternative playback...')
+                  setError('Video codec not supported. Trying alternative playback...')
                   
                   // Prevent infinite retries
                   if (retryCount >= 2) {
-                    setError('This video format is not supported by your browser')
+                    setError('This video format is not supported by your browser. Please try another channel.')
                     return
                   }
                   
@@ -316,15 +346,33 @@ export default function StreamPage() {
                   // Try native playback as fallback
                   setTimeout(() => {
                     if (videoRef.current && currentChannel) {
-                      console.log('Attempting native video playback')
-                      videoRef.current.src = currentChannel.url
+                      console.log('Attempting native video playback for TS stream via proxy')
+                      const fallbackProxyUrl = `/api/stream?url=${encodeURIComponent(currentChannel.url)}`
+                      videoRef.current.src = fallbackProxyUrl
                       videoRef.current.load() // Force reload
                       videoRef.current.play().catch(e => {
                         console.error('Native playback also failed:', e)
-                        setError('This video format is not supported by your browser')
+                        setError('This stream format is not supported by your browser. Try using a different browser or VLC.')
                       })
                     }
                   }, 1000)
+                } else if (data.details === 'bufferStalledError') {
+                  setError('Stream buffer stalled. Attempting recovery...')
+                  if (retryCount < 3) {
+                    setRetryCount(prev => prev + 1)
+                    setTimeout(() => {
+                      if (hlsRef.current) {
+                        hlsRef.current.recoverMediaError()
+                      }
+                    }, 1000)
+                  }
+                } else if (data.details === 'bufferSeekOverHole') {
+                  setError('Stream seeking issue. Jumping to live position...')
+                  // Try to jump to live edge
+                  if (videoRef.current && videoRef.current.buffered.length > 0) {
+                    const bufferEnd = videoRef.current.buffered.end(videoRef.current.buffered.length - 1)
+                    videoRef.current.currentTime = bufferEnd - 2
+                  }
                 } else {
                   // Other media errors, try recovery only if retry count is low
                   if (retryCount < 3) {
@@ -332,18 +380,32 @@ export default function StreamPage() {
                     setRetryCount(prev => prev + 1)
                     setTimeout(() => {
                       if (hlsRef.current) {
-                        hlsRef.current.recoverMediaError()
+                        try {
+                          hlsRef.current.recoverMediaError()
+                        } catch (e) {
+                          console.error('Recovery failed:', e)
+                          setError('Unable to recover stream. Please try another channel.')
+                        }
                       }
                     }, 500)
                   } else {
-                    setError('Unable to recover from playback error')
+                    setError('Unable to recover from playback error. Please try another channel.')
                   }
                 }
                 break
               default:
-                console.log('Fatal error - reloading stream')
+                console.log(`Fatal error of type: ${data.type}, details: ${data.details}`)
+                
+                // Handle other error types
+                if (data.type === Hls.ErrorTypes.MUX_ERROR) {
+                  setError('Stream format error. This stream may not be compatible.')
+                } else if (data.type === Hls.ErrorTypes.KEY_SYSTEM_ERROR) {
+                  setError('DRM protection detected. This stream requires special authorization.')
+                } else {
+                  setError(`Stream error (${data.details || 'unknown'}). Reloading...`)
+                }
+                
                 if (retryCount < 2) {
-                  setError('Stream error. Reloading...')
                   setRetryCount(prev => prev + 1)
                   setTimeout(() => {
                     if (videoRef.current && currentChannel) {
@@ -362,7 +424,13 @@ export default function StreamPage() {
                 break
             }
           } else {
-            // Handle non-fatal errors
+            // Handle non-fatal errors with better logging
+            console.log(`Non-fatal HLS error: ${data.type} - ${data.details}`, {
+              reason: data.reason,
+              response: data.response,
+              networkDetails: data.networkDetails
+            })
+            
             if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
               console.log('Network error (non-fatal):', data.details)
               
@@ -370,6 +438,8 @@ export default function StreamPage() {
               if (data.details === 'fragLoadError') {
                 const fragErrorCount = (hlsRef.current as any)._fragErrorCount || 0
                 ;(hlsRef.current as any)._fragErrorCount = fragErrorCount + 1
+                
+                console.log(`Fragment error count: ${fragErrorCount + 1}`)
                 
                 // Update stream quality based on error frequency
                 if (fragErrorCount > 20) {
@@ -394,7 +464,18 @@ export default function StreamPage() {
                   }, 3000)
                 }
               } else if (data.response?.code === 404) {
-                setError('Stream temporarily unavailable')
+                setError('Stream segment not found - channel may be updating...')
+              } else if (data.response?.code === 403) {
+                setError('Access denied - stream may require authentication')
+              } else if (data.details === 'manifestLoadError') {
+                setError('Cannot load stream playlist - channel may be offline')
+              }
+            } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+              console.log('Media error (non-fatal):', data.details)
+              
+              if (data.details.includes('buffer')) {
+                console.log('Buffer related error, attempting automatic recovery')
+                setStreamQuality('reconnecting')
               }
             } else {
               // Reset fragment error count on successful operations
@@ -525,7 +606,7 @@ export default function StreamPage() {
         // Native HLS support (Safari) or TS support
         console.log('Using native video support for TS/HLS stream')
         setStreamQuality('good')
-        videoRef.current.src = channel.url
+        videoRef.current.src = proxyUrl // Use proxy URL for native playback too
         videoRef.current.load()
         videoRef.current.play().catch(e => {
           console.error('Failed to play video natively:', e)
@@ -534,40 +615,44 @@ export default function StreamPage() {
         })
       } else {
         // Last resort: try direct URL playback for TS
-        console.log('No native support, trying direct TS playback')
+        console.log('No HLS.js support, trying direct TS playback via proxy')
         setError('Loading stream...')
         setStreamQuality('reconnecting')
         
-        // For TS streams, try setting appropriate MIME type
-        if (channel.url.includes('.ts')) {
-          // Create a blob URL with proper MIME type for TS
-          fetch(channel.url)
-            .then(response => response.blob())
-            .then(blob => {
-              const tsBlob = new Blob([blob], { type: 'video/mp2t' })
-              const blobUrl = URL.createObjectURL(tsBlob)
-              
-              videoRef.current!.src = blobUrl
-              videoRef.current!.load()
-              return videoRef.current!.play()
-            })
-            .catch(e => {
-              console.error('TS blob playback failed, trying direct URL:', e)
-              // Fallback to direct URL
-              videoRef.current!.src = channel.url
-              videoRef.current!.load()
-              videoRef.current!.play().catch(e2 => {
-                console.error('Direct TS playback also failed:', e2)
-                setError('This video format is not supported by your browser')
-                setStreamQuality('poor')
-              })
-            })
-        } else {
-          // Non-TS stream, try direct playback
-          videoRef.current.src = channel.url
+        // For TS streams (including numeric URLs), try using proxy URL
+        if (isTS) {
+          console.log('Attempting direct TS stream playback via proxy')
+          
+          // Try proxy URL first
+          videoRef.current.src = proxyUrl
           videoRef.current.load()
           videoRef.current.play().catch(e => {
-            console.error('Direct playback failed:', e)
+            console.error('Proxy playback failed, trying blob method:', e)
+            
+            // Try blob method for numeric URL TS streams
+            fetch(proxyUrl)
+              .then(response => response.blob())
+              .then(blob => {
+                console.log('Creating TS blob with MIME type')
+                const tsBlob = new Blob([blob], { type: 'video/mp2t' })
+                const blobUrl = URL.createObjectURL(tsBlob)
+                
+                videoRef.current!.src = blobUrl
+                videoRef.current!.load()
+                return videoRef.current!.play()
+              })
+              .catch(e2 => {
+                console.error('All playback methods failed:', e2)
+                setError('This TS stream format is not supported by your browser. Try using VLC or another media player.')
+                setStreamQuality('poor')
+              })
+          })
+        } else {
+          // Non-TS stream, try proxy URL
+          videoRef.current.src = proxyUrl
+          videoRef.current.load()
+          videoRef.current.play().catch(e => {
+            console.error('Proxy playback failed:', e)
             setError('This video format is not supported by your browser')
             setStreamQuality('poor')
           })
@@ -623,7 +708,7 @@ export default function StreamPage() {
   // Video event handlers for continuous playback
   useEffect(() => {
     const video = videoRef.current
-    if (!video) return
+    if (!video || !currentChannel) return
 
     const handleLoadStart = () => {
       console.log('Video load started')
@@ -671,7 +756,6 @@ export default function StreamPage() {
 
     const handlePlay = () => {
       setIsPlaying(true)
-      setError(null)
     }
 
     const handlePause = () => {
@@ -717,7 +801,7 @@ export default function StreamPage() {
       video.removeEventListener('pause', handlePause)
       video.removeEventListener('timeupdate', handleTimeUpdate)
     }
-  }, [currentChannel])
+  }, [currentChannel?.id]) // Only depend on channel ID, not the whole object
 
   if (isLoading) {
     return (
@@ -829,8 +913,8 @@ export default function StreamPage() {
                         preload="none"
                         crossOrigin="anonymous"
                       >
-                        <source src={currentChannel.url} type="application/x-mpegURL" />
-                        <source src={currentChannel.url} type="video/mp2t" />
+                        <source src={`/api/stream?url=${encodeURIComponent(currentChannel.url)}`} type="application/x-mpegURL" />
+                        <source src={`/api/stream?url=${encodeURIComponent(currentChannel.url)}`} type="video/mp2t" />
                         Your browser does not support the video tag.
                       </video>
                       
@@ -928,6 +1012,48 @@ export default function StreamPage() {
                       <Badge variant="outline" className="border-green-500/30 text-green-400">
                         HD Quality
                       </Badge>
+                    </div>
+                  </div>
+                )}
+
+                {/* Debug Information Panel - Only show when there are issues */}
+                {(error || streamQuality !== 'good') && currentChannel && (
+                  <div className="mt-4 p-3 bg-slate-800/20 rounded-lg border border-slate-700/30">
+                    <div className="text-xs text-slate-400 space-y-1">
+                      <div className="flex justify-between">
+                        <span>Stream URL:</span>
+                        <span className="text-blue-400 truncate max-w-xs ml-2">{currentChannel.url}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Stream Type:</span>
+                        <span className="text-yellow-400">
+                          {(() => {
+                            if (currentChannel.url.includes('.ts')) return 'TS File'
+                            if (currentChannel.url.includes('.m3u8')) return 'HLS/M3U8'
+                            if (/\/\d+$/.test(currentChannel.url)) return 'TS Stream (Numeric)'
+                            return 'Unknown'
+                          })()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Player:</span>
+                        <span className="text-green-400">
+                          {hlsRef.current ? 'HLS.js' : 'Native'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Quality:</span>
+                        <span className={
+                          streamQuality === 'good' ? 'text-green-400' : 
+                          streamQuality === 'poor' ? 'text-red-400' : 'text-yellow-400'
+                        }>
+                          {streamQuality}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Retry Count:</span>
+                        <span className="text-orange-400">{retryCount}/3</span>
+                      </div>
                     </div>
                   </div>
                 )}

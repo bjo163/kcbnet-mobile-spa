@@ -409,7 +409,9 @@ export default function KCBNetApp() {
 
                 {/* Stream Menu */}
                 <a
-                  href="/stream" 
+                  href="https://flix.apps.avatar.net.id" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="relative text-sm font-semibold transition-all duration-300 hover:scale-105 group text-gray-300 hover:text-white"
                 >
                   Stream
@@ -494,7 +496,9 @@ export default function KCBNetApp() {
                   
                   {/* Stream Menu Mobile */}
                   <a
-                    href="/stream"
+                    href="https://flix.apps.avatar.net.id"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-left text-base font-medium text-gray-300 hover:text-blue-400 transition-colors py-2 px-4 hover:bg-blue-500/10 rounded-lg group block"
                   >
                     <span className="relative">
