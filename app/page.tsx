@@ -42,10 +42,12 @@ import {
   ChevronDown,
 } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import LoadingScreen from "@/components/loading-screen"
 import LiveChatWidget from "@/components/live-chat-widget"
 import AdvancedBackground from "@/components/advanced-background"
 import { ScrollAnimatedSection } from "@/components/scroll-animations"
+import { PERSONIL } from "@/lib/personil"
 
 // Data untuk paket internet
 const internetPackages = [
@@ -766,6 +768,84 @@ export default function KCBNetApp() {
                 </div>
               </ScrollAnimatedSection>
             </div>
+          </div>
+        </section>
+
+        {/* Personil Section with Slider */}
+        <section className="relative py-16 sm:py-24 px-4 sm:px-6 z-20">
+          <div className="container mx-auto relative">
+            <ScrollAnimatedSection>
+              <div className="text-center mb-20">
+                <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent px-4 text-center font-mono">
+                  <GlitchText>Tim Profesional</GlitchText>
+                </h2>
+                <p className="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+                  Bertemu dengan tim ahli yang siap memberikan layanan terbaik untuk kebutuhan internet Anda
+                </p>
+                <AudioVisualizer bars={12} className="mt-8" />
+              </div>
+            </ScrollAnimatedSection>
+
+            {/* Personil Slider */}
+            <ScrollAnimatedSection>
+              <div className="relative">
+                {/* Slider Container */}
+                <div className="overflow-hidden">
+                  <div className="flex space-x-6 animate-slide-infinite">
+                    {[...PERSONIL, ...PERSONIL].map((person, index) => (
+                      <HolographicCard key={`${person.slug}-${index}`} glowColor="blue">
+                        <div className="flex-shrink-0 w-80 group">
+                          <Card className="bg-slate-900/30 backdrop-blur-sm border border-slate-800/30 hover:bg-slate-800/30 hover:border-slate-700/30 transition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/10 relative overflow-hidden">
+                            <CardContent className="p-4">
+                              {/* Audio visualizer background */}
+                              <AudioVisualizer
+                                bars={8}
+                                className="absolute top-2 right-2 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                              />
+
+                              {/* Full Image Display */}
+                              <div className="relative">
+                                <div className="w-full rounded-xl overflow-hidden shadow-xl shadow-blue-500/25 group-hover:scale-105 transition-all duration-300">
+                                  <Image
+                                    src={person.avatar}
+                                    alt={`Personil ${person.name}`}
+                                    width={320}
+                                    height={200}
+                                    className="w-full h-auto object-contain"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Optional: Link to detail (invisible overlay) */}
+                              <Link href={`/personil/${person.slug}`} className="absolute inset-0 z-10">
+                                <span className="sr-only">View {person.name} Profile</span>
+                              </Link>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </HolographicCard>
+                    ))}
+                  </div>
+                </div>
+
+                {/* View All Button */}
+                <div className="text-center mt-12">
+                  <HolographicCard>
+                    <Link href="/personil">
+                      <Button
+                        size="lg"
+                        className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-lg px-10 py-4 h-auto font-semibold shadow-xl shadow-blue-500/25 hover:scale-105 transition-all duration-300 group relative overflow-hidden"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer-fast"></div>
+                        <Users className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" />
+                        View All Team Members
+                        <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform duration-300" />
+                      </Button>
+                    </Link>
+                  </HolographicCard>
+                </div>
+              </div>
+            </ScrollAnimatedSection>
           </div>
         </section>
 
