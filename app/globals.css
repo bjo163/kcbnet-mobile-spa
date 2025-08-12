@@ -2,6 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global animation governor: pause animations when tab hidden */
+html[data-anim="paused"] *,
+html[data-anim="paused"] *::before,
+html[data-anim="paused"] *::after {
+  animation-play-state: paused !important;
+  transition-duration: 0ms !important;
+}
+
+/* Save-Data and Reduced Motion softeners */
+html[data-save="1"] *,
+html[data-reduced-motion="1"] * {
+  animation-duration: 1.5x; /* no-op placeholder, keep classes but slower */
+}
+
+/* Utility classes for containment and content visibility */
+.contain-content {
+  contain: content;
+}
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1000px 800px; /* reserve space */
+}
+
 @layer base {
   :root {
     --background: 2 6% 9%;
@@ -30,8 +53,8 @@
 @layer components {
   .glass-effect {
     background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px); /* reduced from 20px */
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .gradient-text {
@@ -42,7 +65,7 @@
   }
 
   .glow-effect {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.25);
   }
 
   .text-shadow {
@@ -569,22 +592,29 @@ video {
 }
 
 .backdrop-blur-sm {
-  backdrop-filter: blur(4px); /* dari blur(8px) */
+  backdrop-filter: blur(3px); /* dari blur(4px) */
 }
 
 .blur-3xl {
-  filter: blur(32px); /* dari blur(64px) */
+  filter: blur(28px); /* dari 32px */
 }
 
 .blur-2xl {
-  filter: blur(24px); /* dari blur(40px) */
+  filter: blur(20px); /* dari 24px */
 }
 
 /* Kurangi shadow complexity */
 .shadow-xl {
-  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 22px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .shadow-lg {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Pause animations for offscreen sections marked with .pause-offscreen */
+.pause-offscreen:not(.is-inview) *,
+.pause-offscreen:not(.is-inview) *::before,
+.pause-offscreen:not(.is-inview) *::after {
+  animation-play-state: paused !important;
 }

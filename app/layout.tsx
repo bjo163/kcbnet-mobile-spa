@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import './globals.css'
+import AnimationGovernor from '@/components/animation-governor'
 
 export const metadata: Metadata = {
   title: 'KCBNet - Internet Fiber Optic Provider',
@@ -29,7 +30,10 @@ html {
 }
         `}</style>
       </head>
-      <body>{children}</body>
+      <body>
+        <AnimationGovernor />
+        {children}
+      </body>
     </html>
   )
 }

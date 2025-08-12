@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useRef } from "react"
 
 export function useScrollAnimation() {
@@ -15,8 +14,10 @@ export function useScrollAnimation() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("animate-fade-in-up")
+            entry.target.classList.add("animate-fade-in-up", "is-inview")
             entry.target.classList.remove("opacity-0", "translate-y-8")
+          } else {
+            entry.target.classList.remove("is-inview")
           }
         })
       },
@@ -35,7 +36,7 @@ export function ScrollAnimatedSection({ children, className = "" }: { children: 
   const ref = useScrollAnimation()
 
   return (
-    <div ref={ref} className={`opacity-0 translate-y-8 transition-all duration-700 ease-out ${className}`}>
+    <div ref={ref} className={`opacity-0 translate-y-8 transition-all duration-700 ease-out pause-offscreen ${className}`}>
       {children}
     </div>
   )
