@@ -38,9 +38,9 @@ export const PERSONIL: Personil[] = [
     slug: "bagus",
     name: "Bagus",
     role: "Teknisi",
-    avatar: "/images/Personil/idcard_page_3.png",
+    avatar: "/images/Personil/idcard_page_4.png",
     idcards: [
-      "/images/Personil/idcard_page_3.png",
+      "/images/Personil/idcard_page_4.png",
     ],
     partner: "Exatel Telecom",
     idNumber: "KCB0062025",
@@ -50,9 +50,9 @@ export const PERSONIL: Personil[] = [
     slug: "iki-zanta",
     name: "Iki Zanta",
     role: "Teknisi",
-    avatar: "/images/Personil/idcard_page_4.png",
+    avatar: "/images/Personil/idcard_page_3.png",
     idcards: [
-      "/images/Personil/idcard_page_4.png",
+      "/images/Personil/idcard_page_3.png",
     ],
     partner: "Exatel Telecom",
     idNumber: "KCB0052025",
