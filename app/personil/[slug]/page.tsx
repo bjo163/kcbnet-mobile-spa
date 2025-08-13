@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { PERSONIL } from "@/lib/personil"
 import { Card, CardContent } from "@/components/ui/card"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Badge } from "@/components/ui/badge"
 
 export function generateStaticParams() {
   return PERSONIL.map((p) => ({ slug: p.slug }))
@@ -48,7 +49,7 @@ export default function PersonilDetail({ params }: { params: { slug: string } })
             ))}
           </CardContent>
         </Card>
-        <div className="space-y-2">
+        <div className="space-y-3">
           <h1 className="text-2xl font-semibold">{data.name}</h1>
           <p className="text-muted-foreground">{data.role}</p>
           {data.idNumber && (
@@ -57,18 +58,10 @@ export default function PersonilDetail({ params }: { params: { slug: string } })
               <span className="font-medium">{data.idNumber}</span>
             </p>
           )}
-          {data.company && (
-            <p className="text-sm">
-              Perusahaan:{" "}
-              <span className="font-medium">{data.company}</span>
-            </p>
-          )}
-          {data.partner && (
-            <p className="text-sm">
-              Partnership:{" "}
-              <span className="font-medium">{data.partner}</span>
-            </p>
-          )}
+          <div className="flex flex-wrap gap-2 pt-1">
+            {data.company && <Badge variant="secondary">{data.company}</Badge>}
+            {data.partner && <Badge>Partner: {data.partner}</Badge>}
+          </div>
         </div>
       </div>
     </main>

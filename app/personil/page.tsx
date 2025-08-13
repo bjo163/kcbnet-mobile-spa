@@ -6,11 +6,12 @@ import { PERSONIL } from "@/lib/personil"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
 
 export default function PersonilPage() {
   const [q, setQ] = useState("")
   const list = PERSONIL.filter((p) =>
-    (p.name + " " + p.role + " " + (p.idNumber || "")).toLowerCase().includes(q.toLowerCase())
+    (p.name + " " + p.role + " " + (p.idNumber || "") + " " + (p.company || "") + " " + (p.partner || "")).toLowerCase().includes(q.toLowerCase())
   )
 
   return (
@@ -19,7 +20,7 @@ export default function PersonilPage() {
         <h1 className="text-xl font-semibold">Personil</h1>
         <div className="w-full max-w-sm ml-auto">
           <Input
-            placeholder="Cari nama, jabatan, atau No. ID..."
+            placeholder="Cari nama, jabatan, No. ID, perusahaan, atau partner..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
@@ -42,9 +43,13 @@ export default function PersonilPage() {
                 </Avatar>
                 <CardTitle className="text-base mt-2">{p.name}</CardTitle>
               </CardHeader>
-              <CardContent className="text-center text-sm text-muted-foreground -mt-4 space-y-1">
+              <CardContent className="text-center text-sm text-muted-foreground -mt-4 space-y-2">
                 <div>{p.role}</div>
                 {p.idNumber && <div className="text-xs">No. ID: {p.idNumber}</div>}
+                <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                  {p.company && <Badge variant="secondary" className="text-xs">{p.company}</Badge>}
+                  {p.partner && <Badge className="text-xs">Partner: {p.partner}</Badge>}
+                </div>
               </CardContent>
             </Card>
           </Link>
