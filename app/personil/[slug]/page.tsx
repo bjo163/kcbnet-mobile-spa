@@ -51,9 +51,22 @@ export default function PersonilDetail({ params }: { params: { slug: string } })
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold">{data.name}</h1>
           <p className="text-muted-foreground">{data.role}</p>
+          {data.idNumber && (
+            <p className="text-sm">
+              No. ID:{" "}
+              <span className="font-medium">{data.idNumber}</span>
+            </p>
+          )}
+          {data.company && (
+            <p className="text-sm">
+              Perusahaan:{" "}
+              <span className="font-medium">{data.company}</span>
+            </p>
+          )}
           {data.partner && (
             <p className="text-sm">
-              Partnership: <span className="font-medium">{data.partner}</span>
+              Partnership:{" "}
+              <span className="font-medium">{data.partner}</span>
             </p>
           )}
         </div>
